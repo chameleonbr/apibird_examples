@@ -1,0 +1,13 @@
+{
+    "name": "vendor/apibird-examples",
+    "description": "Descrição do projeto apibird_examples.",
+    "authors": [
+        {
+            "name": "avila",
+            "email": "your@email.here"
+        }
+    ],
+    "require": {
+        
+    }
+}
