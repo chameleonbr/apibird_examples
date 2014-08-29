@@ -8,8 +8,9 @@
         }
     ],
     "require": {
-        
-    },
+        "respect/validation": "0.6.1",
+        "chameleonbr/apibird": "dev-master" 
+   },
     "autoload": {
         "psr-4": {
             "Example\\": "src/"
