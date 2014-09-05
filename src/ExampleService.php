@@ -30,16 +30,18 @@ class ExampleService extends \Phalcon\DI\Injectable
     {
         if (v::numeric()->validate($id) && $this->validateUser($data)) {
             $this->users[$id] = $data;
+            return true;
         }
+        return false;
     }
 
     public function saveUser($data = [])
     {
         if ($this->validateUser($data)) {
-            $this->users[] = $data;
-            return 5;
+            $this->users[5] = $data;
+            return [5, $this->users[5]];
         }
-        throw new \ApiBird\Error\BadRequestException('Unable to Parse Data.');
+        throw new \Exception();
     }
 
     public function getUser($id = null)
@@ -47,16 +49,21 @@ class ExampleService extends \Phalcon\DI\Injectable
         if (v::numeric()->validate($id) && isset($this->users[$id])) {
             return $this->users[$id];
         }
-        throw new \ApiBird\Error\NotFoundException('Resource Not Found.');
+        throw new \Exception();
     }
 
     public function deleteUser($id = null)
     {
-        if (v::numeric()->validate($id)) {
-            unset($this->users[$id]);
-            return true;
+        try {
+            if (v::numeric()->validate($id) && isset($this->users[$id])) {
+                unset($this->users[$id]);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
         }
-        return false;
     }
 
     public function listUsers()
