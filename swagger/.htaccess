@@ -1,0 +1,7 @@
+<ifModule mod_headers.c>
+    SetEnvIfNoCase ORIGIN (.*) ORIGIN=$1
+    Header always set Access-Control-Allow-Origin "%{ORIGIN}e"               
+    Header always set Access-Control-Allow-Methods "POST, GET, PUT, OPTIONS, PATCH, DELETE" 
+    Header always set Access-Control-Allow-Headers "X-Accept-Charset,X-Accept,Content-Type"
+    Header always set Access-Control-Allow-Credentials "true"
+</ifModule>

@@ -1,7 +1,6 @@
 <?php
 
 require '../bootstrap.php';
-
 /**
  * @package
  * @category
@@ -29,13 +28,16 @@ $di->set('userService', function() {
  *     method="GET",
  *     summary="Get users",
  *     notes="",
- *     type="User",
+ *     type="array",
+ *     items="$ref:User",
  *     nickname="getUsers",
+ *     @SWG\Produces("application/json"),
+ *     @SWG\Produces("application/xml"),
  *     @SWG\ResponseMessage(code=404, message="Users not found")
  *   ),
  *   @SWG\Operation(
  *     method="POST",
- *     summary="Creates user",
+ *     summary="Create user",
  *     notes="",
  *     type="void",
  *     nickname="createUser",
@@ -45,7 +47,8 @@ $di->set('userService', function() {
  *       required=true,
  *       type="User",
  *       paramType="body"
- *     )
+ *     ),
+ *     @SWG\ResponseMessage(code=400, message="Invalid user data"),
  *   )
  * )
  */
@@ -64,7 +67,7 @@ $app->post('/users', function() use ($app) {
     }
 });
 /**
- * @SWG\Api(path="/user/{id}",
+ * @SWG\Api(path="/users/{id}",
  *   @SWG\Operation(
  *     method="GET",
  *     summary="Get user by user id",
@@ -78,6 +81,7 @@ $app->post('/users', function() use ($app) {
  *       type="integer",
  *       paramType="path"
  *     ),
+ *     @SWG\ResponseMessage(code=200, message="User Found"),
  *     @SWG\ResponseMessage(code=400, message="Invalid username supplied"),
  *     @SWG\ResponseMessage(code=404, message="User not found")
  *   ),
@@ -101,7 +105,8 @@ $app->post('/users', function() use ($app) {
  *       type="User",
  *       paramType="body"
  *     ),
- *     @SWG\ResponseMessage(code=400, message="Invalid username supplied"),
+ *     @SWG\ResponseMessage(code=200, message="User updated"),
+ *     @SWG\ResponseMessage(code=400, message="Invalid username or user data"),
  *     @SWG\ResponseMessage(code=404, message="User not found")
  *   ),
  * @SWG\Operation(
@@ -117,8 +122,9 @@ $app->post('/users', function() use ($app) {
  *       type="integer",
  *       paramType="path"
  *     ),
+ *     @SWG\ResponseMessage(code=200, message="User deleted"),
  *     @SWG\ResponseMessage(code=400, message="Invalid username supplied"),
- *     @SWG\ResponseMessage(code=404, message="User not found")
+ *     @SWG\ResponseMessage(code=404, message="User not exist")
  *   )
  * )
  */
@@ -132,11 +138,12 @@ $app->put('/users/{id}', function($id) use ($app) {
     $data = $app->request->getBody();
     $ok = $app->userService->updateUser($id, $data);
     if ($ok) {
-        return $app->response->ok(\ApiBird\JSend::success('User updated'));
+        return $app->response->noContent(\ApiBird\JSend::success('User updated'));
     } else {
         return $app->response->badRequest(\ApiBird\JSend::error('User not exist or could not be modified'));
     }
 });
+
 $app->delete('/users/{id}', function($id) use ($app) {
     if ($app->userService->deleteUser($id)) {
         return $app->response->ok(\ApiBird\JSend::success('User deleted'));
@@ -149,7 +156,7 @@ $app->notFound(function()use ($app) {
     return $app->response->notFound(\ApiBird\JSend::error('Service not exist'));
 });
 try {
-    $app->handle();
+    return $app->handle();
 } catch (\Exception $e) {
-    return $app->response->notFound(\ApiBird\JSend::error($e->getMessage()));
+    return $app->response->InternalServerError(\ApiBird\JSend::error($e->getMessage()));
 }

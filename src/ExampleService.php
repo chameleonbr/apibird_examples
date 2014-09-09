@@ -4,27 +4,48 @@ namespace Example;
 
 use Respect\Validation\Validator as v;
 
+/**
+ * @SWG\Model(id="User",required="name, phone")
+ */
 class ExampleService extends \Phalcon\DI\Injectable
 {
 
     protected $users = [
-        1 => [
+        [
+            'id' => 1,
             'name' => 'John',
-            'phone' => '1233456785'
+            'phone' => 1233456785
         ],
-        2 => [
+        [
+            'id' => 2,
             'name' => 'Jack',
-            'phone' => '5435435123'
+            'phone' => 5435435123
         ],
-        3 => [
+        [
+            'id' => 3,
             'name' => 'Greg',
-            'phone' => '5435435435'
+            'phone' => 5435435435
         ],
-        4 => [
+        [
+            'id' => 4,
             'name' => 'Mike',
-            'phone' => '8768678678'
+            'phone' => 8768678678
         ],
     ];
+
+     /**
+     * @SWG\Property(name="id",type="integer",description="Id of user")
+     */
+    public $id;
+    /**
+     * @SWG\Property(name="name",type="string",description="Name of user")
+     */
+    public $name;
+
+    /**
+     * @SWG\Property(name="phone",type="integer",description="Phone of user")
+     */
+    public $phone;
 
     public function updateUser($id = null, $data = [])
     {
