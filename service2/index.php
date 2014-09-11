@@ -13,9 +13,9 @@ require '../bootstrap.php';
  *   description="Operations about user",
  *   @SWG\Produces("application/json"),
  *   @SWG\Produces("application/xml"),
- *   @SWG\Consumes("application/xml"),
  *   @SWG\Consumes("application/json"),
- *   @SWG\Consumes("application/form-urlencoded")
+ *   @SWG\Consumes("application/xml"),
+ *   @SWG\Consumes("application/x-www-form-urlencoded")
  * )
  */
 $di->set('userService', function() {
@@ -56,6 +56,8 @@ $app->get('/users', function() use ($app) {
     $app->produces(['json', 'xml']);
     return $app->response->ok($app->userService->listUsers());
 });
+
+// example using try catch
 $app->post('/users', function() use ($app) {
     $app->consumes(['json', 'xml', 'form']);
     try {
@@ -63,7 +65,7 @@ $app->post('/users', function() use ($app) {
         $resource = $app->userService->saveUser($data);
         return $app->response->created(\ApiBird\JSend::success('User saved'), ['Location' => '/users/' . $resource[0]]);
     } catch (\Exception $e) {
-        return $app->response->badRequest(\ApiBird\JSend::error('User could not be saved'));
+        return $app->response->badRequest(\ApiBird\JSend::error('User could not be saved - ' . $e->getMessage()));
     }
 });
 /**
@@ -82,7 +84,6 @@ $app->post('/users', function() use ($app) {
  *       paramType="path"
  *     ),
  *     @SWG\ResponseMessage(code=200, message="User Found"),
- *     @SWG\ResponseMessage(code=400, message="Invalid username supplied"),
  *     @SWG\ResponseMessage(code=404, message="User not found")
  *   ),
  * @SWG\Operation(
@@ -105,8 +106,7 @@ $app->post('/users', function() use ($app) {
  *       type="User",
  *       paramType="body"
  *     ),
- *     @SWG\ResponseMessage(code=200, message="User updated"),
- *     @SWG\ResponseMessage(code=400, message="Invalid username or user data"),
+ *     @SWG\ResponseMessage(code=204, message="User updated"),
  *     @SWG\ResponseMessage(code=404, message="User not found")
  *   ),
  * @SWG\Operation(
@@ -123,14 +123,42 @@ $app->post('/users', function() use ($app) {
  *       paramType="path"
  *     ),
  *     @SWG\ResponseMessage(code=200, message="User deleted"),
- *     @SWG\ResponseMessage(code=400, message="Invalid username supplied"),
  *     @SWG\ResponseMessage(code=404, message="User not exist")
- *   )
+ *   ),
+ *   @SWG\Operation(
+ *     method="PATCH",
+ *     summary="Update only field(s) of user",
+ *     notes="",
+ *     type="void",
+ *     nickname="patchUserById",
+ *     @SWG\Parameter(
+ *       name="id",
+ *       description="The id that needs to be updated. Use 1 for testing.",
+ *       required=true,
+ *       type="integer",
+ *       paramType="path"
+ *     ),
+ *     @SWG\Parameter(
+ *       name="body",
+ *       description="User object",
+ *       required=true,
+ *       type="User",
+ *       paramType="body"
+ *     ),
+ *     @SWG\ResponseMessage(code=204, message="User updated"),
+ *     @SWG\ResponseMessage(code=404, message="User not found")
+ *   ),
  * )
  */
+// example using array or false
 $app->get('/users/{id}', function($id) use ($app) {
     $app->produces(['json', 'xml']);
-    return $app->response->ok($app->userService->getUser($id));
+    $userData = $app->userService->getUser($id);
+    if ($userData) {
+        return $app->response->ok($userData);
+    } else {
+        return $app->response->notFound('User ID ' . $id . ' not exist');
+    }
 });
 
 $app->put('/users/{id}', function($id) use ($app) {
@@ -138,7 +166,18 @@ $app->put('/users/{id}', function($id) use ($app) {
     $data = $app->request->getBody();
     $ok = $app->userService->updateUser($id, $data);
     if ($ok) {
-        return $app->response->noContent(\ApiBird\JSend::success('User updated'));
+        return $app->response->noContent();
+    } else {
+        return $app->response->badRequest(\ApiBird\JSend::error('User not exist or could not be modified'));
+    }
+});
+
+$app->patch('/users/{id}', function($id) use ($app) {
+    $app->produces(['json', 'xml']);
+    $data = $app->request->getBody();
+    $ok = $app->userService->updateUser($id, $data);
+    if ($ok) {
+        return $app->response->noContent();
     } else {
         return $app->response->badRequest(\ApiBird\JSend::error('User not exist or could not be modified'));
     }
@@ -155,6 +194,7 @@ $app->delete('/users/{id}', function($id) use ($app) {
 $app->notFound(function()use ($app) {
     return $app->response->notFound(\ApiBird\JSend::error('Service not exist'));
 });
+
 try {
     return $app->handle();
 } catch (\Exception $e) {
