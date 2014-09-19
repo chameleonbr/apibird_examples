@@ -48,6 +48,7 @@ $di->set('userService', function() {
  *       type="User",
  *       paramType="body"
  *     ),
+ *     @SWG\ResponseMessage(code=201, message="User Created"),
  *     @SWG\ResponseMessage(code=400, message="Invalid user data"),
  *   )
  * )
@@ -63,9 +64,9 @@ $app->post('/users', function() use ($app) {
     try {
         $data = $app->request->getBody();
         $resource = $app->userService->saveUser($data);
-        return $app->response->created(\ApiBird\JSend::success('User saved'), ['Location' => '/users/' . $resource[0]]);
+        return $app->response->created('User saved', ['Location' => '/users/' . $resource[0]]);
     } catch (\Exception $e) {
-        return $app->response->badRequest(\ApiBird\JSend::error('User could not be saved - ' . $e->getMessage()));
+        return $app->response->badRequest('User could not be saved - ' . $e->getMessage());
     }
 });
 /**
@@ -168,7 +169,7 @@ $app->put('/users/{id}', function($id) use ($app) {
     if ($ok) {
         return $app->response->noContent();
     } else {
-        return $app->response->badRequest(\ApiBird\JSend::error('User not exist or could not be modified'));
+        return $app->response->badRequest('User not exist or could not be modified');
     }
 });
 
@@ -179,7 +180,7 @@ $app->patch('/users/{id}', function($id) use ($app) {
     if ($ok) {
         return $app->response->noContent();
     } else {
-        return $app->response->badRequest(\ApiBird\JSend::error('User not exist or could not be modified'));
+        return $app->response->badRequest('User not exist or could not be modified');
     }
 });
 
@@ -187,16 +188,16 @@ $app->delete('/users/{id}', function($id) use ($app) {
     if ($app->userService->deleteUser($id)) {
         return $app->response->ok(\ApiBird\JSend::success('User deleted'));
     } else {
-        return $app->response->notFound(\ApiBird\JSend::error('User not exist'));
+        return $app->response->notFound('User not exist');
     }
 });
 
 $app->notFound(function()use ($app) {
-    return $app->response->notFound(\ApiBird\JSend::error('Service not exist'));
+    return $app->response->notFound('Service not exist');
 });
 
 try {
     return $app->handle();
 } catch (\Exception $e) {
-    return $app->response->InternalServerError(\ApiBird\JSend::error($e->getMessage()));
+    return $app->response->InternalServerError($e->getMessage());
 }

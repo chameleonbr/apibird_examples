@@ -16,8 +16,12 @@ $di->set('apibird', function() {
         'csv' => '\\ApiBird\\Extension\\Csv',
         'multipart' => '\\ApiBird\\Extension\\Multipart',
     ]);
-    $api->setErrorDataHandler(function($data, $code, $msg) {
-        return \ApiBird\JSend::error($code . ' - ' . $msg, $data);
+    $api->setDataHandler(function($data, $code, $msg) {
+        if($code >= 400 || $code == 201){
+            $type = ($code >= 400)?('error'):('success');
+            return \ApiBird\JSend::$type($code . ' - ' . $msg, $data);
+        }
+        return $data;
     });
     $api->setDefaultProduces('json')->setDefaultConsumes('form')->enableCors();
     return $api;

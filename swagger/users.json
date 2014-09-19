@@ -1,0 +1,210 @@
+{
+    "basePath": "http://localhost/apibird_examples/service2",
+    "swaggerVersion": "1.2",
+    "apiVersion": "1.0.0",
+    "resourcePath": "/users",
+    "apis": [
+        {
+            "path": "/users",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Get users",
+                    "nickname": "getUsers",
+                    "type": "array",
+                    "items": {
+                        "$ref": "User"
+                    },
+                    "responseMessages": [
+                        {
+                            "code": 404,
+                            "message": "Users not found"
+                        }
+                    ],
+                    "notes": "",
+                    "produces": [
+                        "application/json",
+                        "application/xml"
+                    ]
+                },
+                {
+                    "method": "POST",
+                    "summary": "Create user",
+                    "nickname": "createUser",
+                    "type": "void",
+                    "parameters": [
+                        {
+                            "paramType": "body",
+                            "name": "body",
+                            "type": "User",
+                            "required": true,
+                            "description": "User object"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 400,
+                            "message": "Invalid user data"
+                        }
+                    ],
+                    "notes": ""
+                }
+            ]
+        },
+        {
+            "path": "/users/{id}",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Get user by user id",
+                    "nickname": "getUserById",
+                    "type": "User",
+                    "parameters": [
+                        {
+                            "paramType": "path",
+                            "name": "id",
+                            "type": "integer",
+                            "required": true,
+                            "description": "The id that needs to be fetched. Use user for testing."
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 200,
+                            "message": "User Found"
+                        },
+                        {
+                            "code": 404,
+                            "message": "User not found"
+                        }
+                    ],
+                    "notes": ""
+                },
+                {
+                    "method": "PUT",
+                    "summary": "Put by user id",
+                    "nickname": "putUserById",
+                    "type": "void",
+                    "parameters": [
+                        {
+                            "paramType": "path",
+                            "name": "id",
+                            "type": "integer",
+                            "required": true,
+                            "description": "The id that needs to be updated. Use 1 for testing."
+                        },
+                        {
+                            "paramType": "body",
+                            "name": "body",
+                            "type": "User",
+                            "required": true,
+                            "description": "User object"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 204,
+                            "message": "User updated"
+                        },
+                        {
+                            "code": 404,
+                            "message": "User not found"
+                        }
+                    ],
+                    "notes": ""
+                },
+                {
+                    "method": "DELETE",
+                    "summary": "Delete by user id",
+                    "nickname": "delUserById",
+                    "type": "void",
+                    "parameters": [
+                        {
+                            "paramType": "path",
+                            "name": "id",
+                            "type": "integer",
+                            "required": true,
+                            "description": "The id that needs to be deleted. Use 1 for testing."
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 200,
+                            "message": "User deleted"
+                        },
+                        {
+                            "code": 404,
+                            "message": "User not exist"
+                        }
+                    ],
+                    "notes": ""
+                },
+                {
+                    "method": "PATCH",
+                    "summary": "Update only field(s) of user",
+                    "nickname": "patchUserById",
+                    "type": "void",
+                    "parameters": [
+                        {
+                            "paramType": "path",
+                            "name": "id",
+                            "type": "integer",
+                            "required": true,
+                            "description": "The id that needs to be updated. Use 1 for testing."
+                        },
+                        {
+                            "paramType": "body",
+                            "name": "body",
+                            "type": "User",
+                            "required": true,
+                            "description": "User object"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code": 204,
+                            "message": "User updated"
+                        },
+                        {
+                            "code": 404,
+                            "message": "User not found"
+                        }
+                    ],
+                    "notes": ""
+                }
+            ]
+        }
+    ],
+    "models": {
+        "User": {
+            "id": "User",
+            "required": [
+                "name",
+                "phone"
+            ],
+            "properties": {
+                "id": {
+                    "description": "Id of user",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "Name of user",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "Phone of user",
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "produces": [
+        "application/json",
+        "application/xml"
+    ],
+    "consumes": [
+        "application/json",
+        "application/xml",
+        "application/x-www-form-urlencoded"
+    ]
+}
